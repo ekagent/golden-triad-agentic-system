@@ -1,0 +1,20 @@
+{
+  "name": "golden-triad-agentic-system",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "ioredis": "^5.10.1",
+    "next": "16.1.6",
+    "postgres": "^3.4.7",
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
