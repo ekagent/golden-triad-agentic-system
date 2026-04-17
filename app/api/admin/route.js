@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getOverviewStats, listAllUsers, getRecentRuns } from "@/lib/admin";
+import { getUsageOverview } from "@/lib/usage";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -37,6 +38,12 @@ export async function GET(request) {
       const limit = parseInt(searchParams.get("limit") || "20", 10);
       const runs = await getRecentRuns(limit);
       return NextResponse.json({ runs });
+    }
+
+    if (view === "usage") {
+      const days = parseInt(searchParams.get("days") || "30", 10);
+      const usage = await getUsageOverview(days);
+      return NextResponse.json(usage);
     }
 
     return NextResponse.json({ error: "Unknown view" }, { status: 400 });
