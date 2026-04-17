@@ -31,3 +31,21 @@ Subscriptions guarantee cash flow and provide users with a monthly credit refres
 
 ## System Enforcement
 When an agent attempts to execute a task, the `orchestrator` natively connects to the Postgres `user_balances` table. By checking `compute_credits`, we immediately halt requests if the user lacks the capacity for a 5-step loop, prompting them to refill via the secure dashboard billing portal.
+
+---
+
+## Implementation Status
+
+| Feature | PR | Status |
+|---|---|---|
+| Credit system + Postgres quotas | #20 | ✅ Shipped |
+| PayPal credit packs | #20 | ✅ Shipped |
+| Coinbase Commerce crypto payments | #21 | ✅ Shipped |
+| Monthly subscription plans (MRR) | #25 | ✅ Shipped |
+
+### Webhook Endpoints
+- **PayPal Subscriptions**: `POST /api/webhooks/paypal` — handles `BILLING.SUBSCRIPTION.ACTIVATED` and `PAYMENT.SALE.COMPLETED`
+- **Coinbase Commerce**: `POST /api/webhooks/crypto` — handles charge confirmation events
+
+### Dashboard
+The billing page at `/dashboard/billing` presents subscriptions first, followed by a "pay as you go" divider and one-time credit packs.
