@@ -4,6 +4,7 @@ import { deductCredits } from "@/lib/storage";
 import { runAgenticTask } from "@/lib/orchestrator";
 import { saveRun } from "@/lib/storage";
 import { getCachedRun, setCachedRun } from "@/lib/cache";
+import { logUsageEvent } from "@/lib/usage";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -73,6 +74,9 @@ export async function POST(request) {
         error: e.message || "Insufficient compute credits. Top up at /dashboard/billing."
       }, { status: 402 });
     }
+
+    // Log usage event for analytics
+    logUsageEvent(userId, "api_run", 1, { providerMode, objective, source: "api_v1", keyId: keyData.keyId }).catch(() => {});
 
     // Execute
     const liveRun = await runAgenticTask({ task, providerMode, objective });

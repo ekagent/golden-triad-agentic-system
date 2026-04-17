@@ -3,6 +3,7 @@ import { runAgenticTask } from "@/lib/orchestrator";
 import { saveRun, deductCredits } from "@/lib/storage";
 import { getCachedRun, setCachedRun } from "@/lib/cache";
 import { auth } from "@clerk/nextjs/server";
+import { logUsageEvent } from "@/lib/usage";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -70,6 +71,9 @@ export async function POST(request) {
     } catch (e) {
       return NextResponse.json({ error: e.message || "Insufficient compute credits. Please refill your balance." }, { status: 402 });
     }
+
+    // Log usage event for analytics
+    logUsageEvent(userId, "run", 1, { providerMode, objective, source: "dashboard" }).catch(() => {});
 
     const liveRun = await runAgenticTask({ task, providerMode, objective });
     const run = buildRunWithRuntime(liveRun, {
