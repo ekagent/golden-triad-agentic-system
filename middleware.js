@@ -1,15 +1,40 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+import { checkRateLimit, getRateLimitHeaders, classifyRoute, extractIdentifier } from "@/lib/rate-limit";
 
-// We define all routes that should be public
+// Routes that don't require Clerk authentication
 const isPublicRoute = createRouteMatcher([
   '/',
   '/api/health(.*)',
-  '/api/run(.*)' // We'll leave API execution public temporarily until MONY-5 introduces billing
+  '/api/v1/(.*)',           // Public API — uses API key auth, not Clerk
+  '/api/webhooks/(.*)',     // Webhooks — verified by signature, not Clerk
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
+  const { pathname } = req.nextUrl;
+
+  // Rate limit all API routes
+  if (pathname.startsWith("/api/")) {
+    const tier = classifyRoute(pathname);
+    const identifier = extractIdentifier(req);
+    const result = await checkRateLimit(identifier, tier);
+
+    if (!result.allowed) {
+      return new NextResponse(
+        JSON.stringify({ error: "Too many requests. Please slow down.", retryAfter: Math.ceil((result.resetAt - Date.now()) / 1000) }),
+        {
+          status: 429,
+          headers: {
+            "Content-Type": "application/json",
+            ...getRateLimitHeaders(result)
+          }
+        }
+      );
+    }
+  }
+
+  // Clerk auth for non-public routes
   if (!isPublicRoute(req)) {
-    // If route is not public (like /dashboard), protect it
     await auth.protect();
   }
 });
