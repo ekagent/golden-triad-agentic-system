@@ -1,4 +1,5 @@
-import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import { SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { getHealthSnapshot } from "@/lib/health";
 
@@ -6,6 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const health = await getHealthSnapshot();
+  const { userId } = await auth();
 
   return (
     <main className="studio" style={{ alignItems: "center", justifyContent: "center", display: "flex", flexDirection: "column", minHeight: "100vh", padding: "2rem" }}>
@@ -18,7 +20,7 @@ export default async function HomePage() {
       </div>
 
       <div className="surface" style={{ padding: "2rem", borderRadius: "12px", width: "100%", maxWidth: "400px", textAlign: "center" }}>
-        <SignedIn>
+        {userId ? (
           <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", alignItems: "center" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
               <UserButton appearance={{ elements: { userButtonAvatarBox: "h-12 w-12" } }} />
@@ -28,9 +30,7 @@ export default async function HomePage() {
               Enter System Dashboard
             </Link>
           </div>
-        </SignedIn>
-
-        <SignedOut>
+        ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             <p className="muted">Please sign in to access the agent workspace.</p>
             <SignInButton mode="modal">
@@ -40,7 +40,7 @@ export default async function HomePage() {
               <button className="history-button" style={{ textAlign: "center", width: "100%" }}>Create Account</button>
             </SignUpButton>
           </div>
-        </SignedOut>
+        )}
       </div>
 
       <div style={{ marginTop: "3rem", fontSize: "0.85rem", color: "var(--color-muted)" }}>
