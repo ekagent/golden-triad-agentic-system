@@ -49,7 +49,7 @@ export default function PricingTable() {
         ))}
       </div>
 
-      <div style={{ maxWidth: "400px", margin: "0 auto" }}>
+      <div style={{ maxWidth: "400px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "1rem" }}>
         <PayPalScriptProvider options={initialOptions}>
             <PayPalButtons
                 style={{ layout: "vertical" }}
@@ -77,6 +77,31 @@ export default function PricingTable() {
                 }}
             />
         </PayPalScriptProvider>
+        
+        <button 
+           className="history-button" 
+           style={{ width: "100%", padding: "12px", borderRadius: "4px", fontSize: "1rem", cursor: "pointer", background: "transparent", border: "1px solid var(--color-border)", color: "var(--color-text)" }}
+           onClick={async () => {
+              setStatus("Initiating Crypto Checkout...");
+              try {
+                const res = await fetch("/api/billing/crypto/create-charge", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ amount: selectedPack.price, credits: selectedPack.credits, name: selectedPack.name })
+                });
+                const data = await res.json();
+                if (data.hosted_url) {
+                  window.location.href = data.hosted_url;
+                } else {
+                  setStatus(`Crypto checkout failed: ${data.error}`);
+                }
+              } catch(e) {
+                setStatus("Crypto checkout failed.");
+              }
+           }}
+         >
+           Pay with Crypto (USDC, ETH, MATIC)
+         </button>
       </div>
     </div>
   );
