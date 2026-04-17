@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { runAgenticTask } from "@/lib/orchestrator";
-import { saveRun } from "@/lib/storage";
+import { saveRun, deductCredits } from "@/lib/storage";
 import { getCachedRun, setCachedRun } from "@/lib/cache";
+import { auth } from "@clerk/nextjs/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -18,6 +19,11 @@ function buildRunWithRuntime(run, runtime) {
 }
 
 export async function POST(request) {
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized. Please authenticate to use the Triad system." }, { status: 401 });
+  }
+
   const body = await request.json();
   const task = typeof body.task === "string" ? body.task.trim() : "";
   const providerMode = typeof body.providerMode === "string" ? body.providerMode : "auto";
@@ -57,6 +63,12 @@ export async function POST(request) {
           bypassed: false
         }
       });
+    }
+
+    try {
+      await deductCredits(userId, 1);
+    } catch (e) {
+      return NextResponse.json({ error: e.message || "Insufficient compute credits. Please refill your balance." }, { status: 402 });
     }
 
     const liveRun = await runAgenticTask({ task, providerMode, objective });
