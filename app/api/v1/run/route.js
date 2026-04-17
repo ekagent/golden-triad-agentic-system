@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { validateApiKey } from "@/lib/api-keys";
-import { deductCredits } from "@/lib/storage";
+import { deductCredits, getUserBalance } from "@/lib/storage";
 import { runAgenticTask } from "@/lib/orchestrator";
 import { saveRun } from "@/lib/storage";
 import { getCachedRun, setCachedRun } from "@/lib/cache";
 import { logUsageEvent } from "@/lib/usage";
+import { checkLowCredits } from "@/lib/notifications";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -77,6 +78,9 @@ export async function POST(request) {
 
     // Log usage event for analytics
     logUsageEvent(userId, "api_run", 1, { providerMode, objective, source: "api_v1", keyId: keyData.keyId }).catch(() => {});
+
+    // Check low-credit thresholds (fire-and-forget)
+    getUserBalance(userId).then(b => checkLowCredits(userId, b.credits)).catch(() => {});
 
     // Execute
     const liveRun = await runAgenticTask({ task, providerMode, objective });
