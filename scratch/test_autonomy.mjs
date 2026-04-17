@@ -15,7 +15,7 @@ async function testAutonomy() {
     const result = await runAgenticTask({
       task: taskDesc,
       providerMode: "auto",
-      objective: "speed"
+      objective: "golden"
     });
 
     console.log("=== RUN COMPLETE ===");
