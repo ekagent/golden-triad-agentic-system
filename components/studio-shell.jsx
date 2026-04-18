@@ -291,6 +291,11 @@ export default function StudioShell({
                         {activeRun.analysis?.complexity || "auto"} · {activeRun.providerMode}
                       </span>
                     </div>
+                    {activeRun.usersSettingsEmployed && (
+                      <p className="mini" style={{ color: "var(--accent)" }}>
+                        User override settings applied (BYOM / API Key)
+                      </p>
+                    )}
                     {activeRun.runtime?.cache ? (
                       <p className="mini">
                         Cache {activeRun.runtime.cache.status}

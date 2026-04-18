@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { href: "/dashboard/billing", label: "Billing" },
   { href: "/dashboard/keys", label: "API Keys" },
   { href: "/dashboard/integrations", label: "Integrations" },
+  { href: "/dashboard/settings", label: "Settings" },
 ];
 
 export default function DashboardLayout({ children }) {

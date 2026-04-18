@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { runAgenticTask } from "@/lib/orchestrator";
-import { saveRun, deductCredits, getUserBalance } from "@/lib/storage";
+import { saveRun, deductCredits, getUserBalance, getUserSettings } from "@/lib/storage";
 import { getCachedRun, setCachedRun } from "@/lib/cache";
 import { auth } from "@clerk/nextjs/server";
 import { logUsageEvent } from "@/lib/usage";
@@ -67,10 +67,14 @@ export async function POST(request) {
       });
     }
 
+    const settings = await getUserSettings(userId);
+    const userKeys = settings.api_keys || {};
+    const cost = Object.keys(userKeys).length > 0 ? 1 : 5;
+
     try {
-      await deductCredits(userId, 1);
+      await deductCredits(userId, cost);
     } catch (e) {
-      return NextResponse.json({ error: e.message || "Insufficient compute credits. Please refill your balance." }, { status: 402 });
+      return NextResponse.json({ error: e.message || `Insufficient compute credits. This action requires ${cost} credits.` }, { status: 402 });
     }
 
     // Log usage event for analytics
@@ -79,7 +83,7 @@ export async function POST(request) {
     // Check low-credit thresholds (fire-and-forget)
     getUserBalance(userId).then(b => checkLowCredits(userId, b.credits)).catch(() => {});
 
-    const liveRun = await runAgenticTask({ task, providerMode, objective });
+    const liveRun = await runAgenticTask({ task, providerMode, objective, userId });
     const run = buildRunWithRuntime(liveRun, {
       responseSource: "live",
       cache: {
