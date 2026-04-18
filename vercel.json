@@ -1,7 +1,21 @@
 {
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
   "functions": {
     "app/api/run/route.js": {
       "maxDuration": 60
     }
-  }
+  },
+  "routes": [
+    {
+      "src": "^.+$",
+      "dest": "/api/run",
+      "continue": true
+    }
+  ]
 }

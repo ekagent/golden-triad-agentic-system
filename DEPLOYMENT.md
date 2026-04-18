@@ -68,6 +68,17 @@ Required repository secrets:
 - `VERCEL_TOKEN`
 - `VERCEL_ORG_ID`
 - `VERCEL_PROJECT_ID`
+- `RAILWAY_TOKEN`
+
+## Automated Secret Synchronization
+
+You can manage all your secrets in GitHub and push them to Vercel and Railway automatically.
+
+1. Add all environment variables listed in `.env.example` to **GitHub Repository Secrets**.
+2. Ensure `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, and `RAILWAY_TOKEN` are also in GitHub Secrets.
+3. The **Sync Secrets** workflow triggers automatically on push to `main` (if manifest changes) or can be triggered manually in the **Actions** tab.
+4. The script pushes all variables to both **Railway** and **All Vercel Environments** (Production, Preview, Development).
+
 
 ## Health Checks
 
