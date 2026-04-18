@@ -61,16 +61,32 @@ async function syncToRailway(keyValuePairs) {
 async function main() {
   console.log("Starting secret synchronization...");
   
+  let secretsSource = {};
+  
+  // SUPPORT SINGLE JSON BUNDLE
+  if (process.env.SYNC_SECRETS_JSON) {
+    try {
+      console.log("Found SYNC_SECRETS_JSON. Parsing bundle...");
+      secretsSource = JSON.parse(process.env.SYNC_SECRETS_JSON);
+      console.log(`Loaded ${Object.keys(secretsSource).length} keys from JSON bundle.`);
+    } catch (e) {
+      console.error("Failed to parse SYNC_SECRETS_JSON. Ensure it is a valid JSON string.");
+      process.exit(1);
+    }
+  }
+
   const toSync = [];
   
+  // Use keys from manifest, but pull from secretsSource first, then process.env
   for (const key of SYNC_KEYS) {
-    const value = process.env[key];
+    const value = secretsSource[key] || process.env[key];
     if (value) {
       toSync.push([key, value]);
     } else {
-      console.log(`Skipping ${key}: No value found in environment.`);
+      console.log(`Skipping ${key}: No value found in bundle or environment.`);
     }
   }
+
 
   if (toSync.length === 0) {
     console.log("No secrets found to sync. Check your GitHub Secrets mapping.");
