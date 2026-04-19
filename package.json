@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "sync-secrets": "node scripts/sync-secrets.mjs"
   },
+
   "dependencies": {
     "@clerk/nextjs": "^7.2.3",
     "@paypal/react-paypal-js": "^9.1.1",

@@ -24,7 +24,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Sync Secrets to Vercel and Railway
+        run: npm run sync-secrets
+        env:
+          SYNC_SECRETS_JSON: ${{ secrets.SYNC_SECRETS_JSON }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
       - name: Pull Vercel environment
+
         run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
