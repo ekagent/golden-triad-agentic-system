@@ -117,6 +117,9 @@ export default function SettingsPage() {
         <p className="muted" style={{ fontSize: "0.85rem", marginBottom: "16px" }}>
           Bring your own LLM API keys to pay only 1 compute credit per run (System fee). If left blank, the platform's API keys will be used costing 5 credits per run (Compute + System).
         </p>
+        <p className="muted" style={{ fontSize: "0.78rem", marginBottom: "16px" }}>
+          Saved keys override the platform keys for your account. Clear a field and save if you want to fall back to the platform-managed provider key again.
+        </p>
 
         {PROVIDERS.map((provider) => (
           <div key={provider.id} style={{ marginBottom: "16px" }}>
