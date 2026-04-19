@@ -18,8 +18,8 @@ function providerLabel(mode) {
   switch (mode) {
     case "glm-first":
       return "GLM first";
-    case "memo-first":
-      return "Memo first";
+    case "mimo-first":
+      return "Mimo first";
     case "openrouter-only":
       return "OpenRouter only";
     default:
@@ -168,7 +168,7 @@ export default function StudioShell({
                   <select id="providerMode" value={providerMode} onChange={(event) => setProviderMode(event.target.value)}>
                     <option value="auto">Auto</option>
                     <option value="glm-first">GLM first</option>
-                    <option value="memo-first">Memo first</option>
+                    <option value="mimo-first">Mimo first</option>
                     <option value="openrouter-only">OpenRouter only</option>
                   </select>
                 </div>
@@ -337,7 +337,7 @@ export default function StudioShell({
           <div className="metric-grid">
             <div className="metric-copy surface">
               <span className="label">Status</span>
-              <span className="metric-value">{configuredCount} / 3</span>
+              <span className="metric-value">{configuredCount} / 4</span>
               <span className="muted">Providers calibrated and ready.</span>
             </div>
             <div className="metric-copy surface">
@@ -346,6 +346,35 @@ export default function StudioShell({
               <span className="muted">Ledger + Redis performance cache.</span>
             </div>
           </div>
+
+          {/* Provider Status Panel */}
+          <section className="surface" style={{ padding: '20px', marginTop: '20px' }}>
+            <h3 className="section-title" style={{ marginBottom: '16px' }}>Provider Status</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '12px' }}>
+              {Object.entries(providerStatus).map(([id, status]) => (
+                <div key={id} style={{ padding: '12px', background: 'rgba(255,255,255,0.5)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: status.configured ? 'var(--accent)' : 'var(--line)' }} />
+                    <strong style={{ fontSize: '0.85rem' }}>{status.label}</strong>
+                  </div>
+                  <p className="muted" style={{ fontSize: '0.75rem', margin: 0 }}>{status.mode}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* MCP Status */}
+          {providerStatus.mcp?.configured && (
+            <section className="surface" style={{ padding: '20px', marginTop: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <h3 className="section-title" style={{ marginBottom: '4px' }}>MCP Server</h3>
+                  <p className="muted" style={{ fontSize: '0.8rem', margin: 0 }}>Custom tools available</p>
+                </div>
+                <span className="mode-pill">Connected</span>
+              </div>
+            </section>
+          )}
         </footer>
       </section>
     </main>

@@ -11,7 +11,7 @@ const AVAILABLE_MODELS = {
 const PROVIDERS = [
   { id: "glm", label: "GLM (Zhipu AI)", placeholder: "GLM_API_KEY" },
   { id: "openrouter", label: "OpenRouter", placeholder: "sk-or-v1-..." },
-  { id: "memo", label: "MiMo / Memo", placeholder: "mimo-..." },
+  { id: "mimo", label: "Mimo AI", placeholder: "mimo-..." },
   { id: "minimax", label: "MiniMax", placeholder: "ey..." }
 ];
 
