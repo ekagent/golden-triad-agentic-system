@@ -60,10 +60,12 @@ textarea {
 
 .studio-shell {
   display: grid;
-  gap: 20px;
-  grid-template-columns: 280px minmax(0, 1.5fr) minmax(320px, 0.95fr);
-  align-items: start;
+  gap: 32px;
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 960px;
+  margin: 0 auto;
 }
+
 
 .surface {
   position: relative;
