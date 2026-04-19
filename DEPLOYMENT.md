@@ -17,6 +17,7 @@ Use this when you want the lowest ops overhead.
    - `CACHE_ENABLED`
    - `CACHE_TTL_SECONDS`
    - `AGENT_RUN_BUDGET_MS`
+   - optional: `AGENTIC_COORD_DIR` if you want to pin coordination metadata to a writable scratch path such as `/tmp/agentic-system/coordination`
    - `OPENROUTER_SITE_URL`
    - `OPENROUTER_SITE_NAME`
 5. Deploy.
