@@ -9,6 +9,7 @@ import SuperAdminBadge from "@/components/SuperAdminBadge";
 
 const NAV_LINKS = [
   { href: "/dashboard", label: "Studio" },
+  { href: "/dashboard/files", label: "Files" },
   { href: "/dashboard/billing", label: "Billing" },
   { href: "/dashboard/keys", label: "API Keys" },
   { href: "/dashboard/integrations", label: "Integrations" },
