@@ -14,8 +14,9 @@ function runCommand(command, env = {}) {
 }
 
 async function syncToVercel(key, value) {
-  const envs = ["production", "preview", "development"];
+  const envs = ["production"]; // Only sync production by default to save time in CI
   for (const env of envs) {
+
     // Vercel CLI command to add env var. 
     // We use a trick to pass the value via stdin or if available via argument.
     // Recent Vercel CLI supports: vercel env add KEY ENV VALUE
@@ -24,7 +25,7 @@ async function syncToVercel(key, value) {
       // First try to remove if exists to avoid "already exists" error in a simple way
       // Or just use 'vercel env rm KEY ENV -y' but that might fail if not exists.
       // Better: Use the fact that 'vercel env add' prints errors if exists.
-      runCommand(`npx vercel env rm ${key} ${env} -y || true`, {
+      runCommand(`npx -y vercel env rm ${key} ${env} -y || true`, {
         VERCEL_ORG_ID: process.env.VERCEL_ORG_ID,
         VERCEL_PROJECT_ID: process.env.VERCEL_PROJECT_ID,
         VERCEL_TOKEN: process.env.VERCEL_TOKEN
@@ -32,11 +33,12 @@ async function syncToVercel(key, value) {
       
       // Use printf to handle special characters and pass to vercel env add
       // vercel env add [name] [environment] [value]
-      runCommand(`printf "%s" "${value.replace(/"/g, '\\"')}" | npx vercel env add ${key} ${env}`, {
+      runCommand(`printf "%s" "${value.replace(/"/g, '\\"')}" | npx -y vercel env add ${key} ${env}`, {
         VERCEL_ORG_ID: process.env.VERCEL_ORG_ID,
         VERCEL_PROJECT_ID: process.env.VERCEL_PROJECT_ID,
         VERCEL_TOKEN: process.env.VERCEL_TOKEN
       });
+
     } catch (e) {
       console.warn(`Failed to sync ${key} to Vercel ${env}: ${e.message}`);
     }
