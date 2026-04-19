@@ -5,10 +5,13 @@ import { checkRateLimit, getRateLimitHeaders, classifyRoute, extractIdentifier }
 // Routes that don't require Clerk authentication
 const isPublicRoute = createRouteMatcher([
   '/',
+  '/waitlist',
   '/api/health(.*)',
+  '/api/waitlist(.*)',      // Waitlist signup is public
   '/api/v1/(.*)',           // Public API — uses API key auth, not Clerk
   '/api/webhooks/(.*)',     // Webhooks — verified by signature, not Clerk
 ]);
+
 
 export default clerkMiddleware(async (auth, req) => {
   const { pathname } = req.nextUrl;
@@ -36,8 +39,20 @@ export default clerkMiddleware(async (auth, req) => {
   // Clerk auth for non-public routes
   if (!isPublicRoute(req)) {
     await auth.protect();
+
+    // Private Beta Gate
+    if (process.env.PRIVATE_BETA_MODE === "true" && pathname !== "/waitlist") {
+      const { userId } = await auth();
+      const admins = (process.env.ADMIN_USER_IDS || "").split(",").map(s => s.trim()).filter(Boolean);
+      const isAdmin = userId && admins.includes(userId);
+
+      if (!isAdmin) {
+        return NextResponse.redirect(new URL("/waitlist", req.url));
+      }
+    }
   }
 });
+
 
 export const config = {
   matcher: [

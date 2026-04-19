@@ -71,11 +71,17 @@ export async function POST(request) {
     const userKeys = settings.api_keys || {};
     const cost = Object.keys(userKeys).length > 0 ? 1 : 5;
 
-    try {
-      await deductCredits(userId, cost);
-    } catch (e) {
-      return NextResponse.json({ error: e.message || `Insufficient compute credits. This action requires ${cost} credits.` }, { status: 402 });
+    const { isAdmin } = await import("@/lib/admin");
+    const isSpecialAccess = isAdmin(userId);
+
+    if (!isSpecialAccess) {
+      try {
+        await deductCredits(userId, cost);
+      } catch (e) {
+        return NextResponse.json({ error: e.message || `Insufficient compute credits. This action requires ${cost} credits.` }, { status: 402 });
+      }
     }
+
 
     // Log usage event for analytics
     logUsageEvent(userId, "run", 1, { providerMode, objective, source: "dashboard" }).catch(() => {});

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import NotificationBell from "@/components/notification-bell";
+import SuperAdminBadge from "@/components/SuperAdminBadge";
+
 
 const NAV_LINKS = [
   { href: "/dashboard", label: "Studio" },
@@ -53,11 +55,13 @@ export default function DashboardLayout({ children }) {
           </nav>
         </div>
 
-        {/* Right: Notification Bell + User */}
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        {/* Right: Tools + Notification Bell + User */}
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <SuperAdminBadge />
           <NotificationBell />
           <UserButton afterSignOutUrl="/" />
         </div>
+
       </header>
 
       {/* Content */}
