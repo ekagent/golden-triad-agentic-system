@@ -14,14 +14,17 @@ export default function SuperAdminBadge() {
   if (!isAdmin) return null;
 
   return (
-    <div className="flex items-center gap-1.5 px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-indigo-400 group relative">
-      <ShieldCheck className="w-3.5 h-3.5" />
-      <span className="text-[10px] font-bold uppercase tracking-wider">SuperAdmin Access</span>
-      
-      {/* Tooltip */}
-      <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-black border border-white/10 rounded-lg text-[9px] text-white/40 leading-tight opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-2xl">
-        You are in developer mode. Payment gates and waitlists are bypassed for your account.
-      </div>
+    <div className="eyebrow" style={{ 
+      gap: '6px', 
+      padding: '4px 10px',
+      background: 'rgba(15, 111, 79, 0.08)',
+      borderColor: 'rgba(15, 111, 79, 0.2)',
+      position: 'relative',
+      cursor: 'default'
+    }}>
+      <ShieldCheck size={12} strokeWidth={2.5} />
+      <span style={{ fontSize: '10px', fontWeight: '700' }}>SuperAdmin</span>
     </div>
   );
+
 }
