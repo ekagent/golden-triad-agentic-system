@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
 
 const DEMO_TASK =
@@ -26,6 +27,10 @@ function providerLabel(mode) {
   }
 }
 
+function isOpenRouterAuthError(message) {
+  return /openrouter authentication failed/i.test(message || "");
+}
+
 export default function StudioShell({
   initialHistory,
   initialHealth,
@@ -43,6 +48,8 @@ export default function StudioShell({
   const [error, setError] = useState(initialHistoryError || "");
   const [isPending, startTransition] = useTransition();
   const providerStatus = health.providers;
+  const showOpenRouterRoutingHint = providerMode === "openrouter-only";
+  const showOpenRouterAuthHelp = isOpenRouterAuthError(error);
 
   const configuredCount = useMemo(
     () => Object.values(providerStatus).filter((provider) => provider.configured).length,
@@ -180,12 +187,78 @@ export default function StudioShell({
                 </div>
               </div>
 
+              {showOpenRouterRoutingHint ? (
+                <div
+                  style={{
+                    borderRadius: "18px",
+                    border: "1px solid rgba(143, 91, 0, 0.18)",
+                    background: "rgba(143, 91, 0, 0.08)",
+                    color: "var(--ink)",
+                    padding: "14px 16px",
+                    display: "grid",
+                    gap: "6px"
+                  }}
+                >
+                  <strong style={{ fontSize: "0.88rem" }}>OpenRouter only mode is active</strong>
+                  <p className="muted" style={{ fontSize: "0.82rem" }}>
+                    This bypasses GLM and Memo entirely. If you saved an OpenRouter key in Settings, that saved key overrides the platform OpenRouter key for your account.
+                  </p>
+                </div>
+              ) : null}
+
               <button className="primary-action" type="submit" disabled={isPending} style={{ width: '100%', justifyContent: 'center' }}>
                 {isPending ? "Running agent pipeline..." : "Run the system"}
               </button>
             </form>
 
             {error ? <div className="error-box">{error}</div> : null}
+            {showOpenRouterAuthHelp ? (
+              <div
+                style={{
+                  borderRadius: "18px",
+                  border: "1px solid rgba(159, 45, 28, 0.18)",
+                  background: "rgba(159, 45, 28, 0.06)",
+                  padding: "16px 18px",
+                  display: "grid",
+                  gap: "8px"
+                }}
+              >
+                <strong style={{ fontSize: "0.9rem" }}>OpenRouter key needs attention</strong>
+                <p className="muted" style={{ fontSize: "0.82rem" }}>
+                  {showOpenRouterRoutingHint
+                    ? "This run was limited to OpenRouter, so a rejected OpenRouter key blocks the whole run."
+                    : "A saved OpenRouter key is being rejected, so any fallback path that depends on OpenRouter will fail."}
+                </p>
+                <p className="muted" style={{ fontSize: "0.82rem" }}>
+                  Replace your saved OpenRouter key with a valid `sk-or-v1-...` key, or clear the OpenRouter field in Settings to fall back to the platform key.
+                </p>
+                <div className="row-inline">
+                  <Link
+                    href="/dashboard/settings"
+                    className="primary-action"
+                    style={{ padding: "10px 16px", fontSize: "0.82rem", textDecoration: "none" }}
+                  >
+                    Open Settings
+                  </Link>
+                  {showOpenRouterRoutingHint ? (
+                    <button
+                      type="button"
+                      onClick={() => setProviderMode("auto")}
+                      style={{
+                        padding: "10px 16px",
+                        borderRadius: "999px",
+                        border: "1px solid var(--line)",
+                        background: "rgba(255, 255, 255, 0.65)",
+                        cursor: "pointer",
+                        fontSize: "0.82rem"
+                      }}
+                    >
+                      Switch Routing To Auto
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
 
             {/* Final Answer */}
             <div className="result-block">
