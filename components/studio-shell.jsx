@@ -278,6 +278,3 @@ export default function StudioShell({
     </main>
   );
 }
-
-  );
-}
