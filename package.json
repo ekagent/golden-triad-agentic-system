@@ -10,7 +10,7 @@
     "sync-secrets": "node scripts/sync-secrets.mjs"
   },
   "dependencies": {
-    "@clerk/nextjs": "^7.2.3",
+    "@clerk/nextjs": "^7.2.6",
     "@paypal/react-paypal-js": "^9.1.1",
     "@upstash/redis": "^1.37.0",
     "jszip": "^3.10.1",
